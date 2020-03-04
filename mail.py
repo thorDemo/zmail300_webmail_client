@@ -6,6 +6,7 @@ import random
 import requests
 import time
 import json
+import os
 
 log = Log('send_email.log').get_log()
 
@@ -37,6 +38,7 @@ def post_auth_user(u, p):
 
 if __name__ == '__main__':
     rand_time = random.randint(10, 20)
+    log.warning(f'working dir: {os.getcwd()}')
     log.warning('RANDOM WAIT {}'.format(rand_time))
     # Test todo
     # time.sleep(rand_time)
