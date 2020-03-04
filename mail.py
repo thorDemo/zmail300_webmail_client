@@ -6,13 +6,15 @@ import random
 import requests
 import time
 import json
+import os
 
 log = Log('send_email.log').get_log()
+root = os.getcwd()
 
 
 def get_email_mission():
     c = ConfigParser()
-    c.read('config.ini', encoding='utf-8')
+    c.read(f'{root}/config.ini', encoding='utf-8')
     host = c.get('server', 'server_host')
     response = requests.get(f'http://{host}/email/', timeout=2)
     temp = json.dumps(response.json(), ensure_ascii=False)
@@ -21,7 +23,7 @@ def get_email_mission():
 
 def get_global_account():
     c = ConfigParser()
-    c.read('config.ini', encoding='utf-8')
+    c.read(f'{root}/config.ini', encoding='utf-8')
     host = c.get('server', 'server_host')
     response = requests.get(f'http://{host}/account/')
     return response.json()
@@ -29,7 +31,7 @@ def get_global_account():
 
 def post_auth_user(u, p):
     c = ConfigParser()
-    c.read('config.ini', encoding='utf-8')
+    c.read(f'{root}/config.ini', encoding='utf-8')
     host = c.get('server', 'server_host')
     requests.get(f'http://{host}/auth_account/?username={u}&password={p}')
     return
@@ -52,7 +54,7 @@ if __name__ == '__main__':
                 password = account_data['password']
                 log.warning(f'Request New Account:{username},{password}')
                 conf = ConfigParser()
-                conf.read('config.ini', encoding='utf-8')
+                conf.read(f'{root}/config.ini', encoding='utf-8')
                 debuglevel = int(conf.get('server', 'debuglevel'))
                 server = ZMailWebServer(username, password, debuglevel=debuglevel)
                 if server.x_token is None:
