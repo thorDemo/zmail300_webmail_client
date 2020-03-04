@@ -5,33 +5,32 @@ from configparser import ConfigParser
 import random
 import requests
 import time
-import traceback
 import json
 
 log = Log('send_email.log').get_log()
 
 
 def get_email_mission():
-    conf = ConfigParser()
-    conf.read('config.ini', encoding='utf-8')
-    host = conf.get('server', 'server_host')
+    c = ConfigParser()
+    c.read('config.ini', encoding='utf-8')
+    host = c.get('server', 'server_host')
     response = requests.get(f'http://{host}/email/', timeout=2)
     temp = json.dumps(response.json(), ensure_ascii=False)
     return json.loads(temp)
 
 
 def get_global_account():
-    conf = ConfigParser()
-    conf.read('config.ini', encoding='utf-8')
-    host = conf.get('server', 'server_host')
+    c = ConfigParser()
+    c.read('config.ini', encoding='utf-8')
+    host = c.get('server', 'server_host')
     response = requests.get(f'http://{host}/account/')
     return response.json()
 
 
 def post_auth_user(u, p):
-    conf = ConfigParser()
-    conf.read('config.ini', encoding='utf-8')
-    host = conf.get('server', 'server_host')
+    c = ConfigParser()
+    c.read('config.ini', encoding='utf-8')
+    host = c.get('server', 'server_host')
     requests.get(f'http://{host}/auth_account/?username={u}&password={p}')
     return
 
