@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 conf = ConfigParser()
                 conf.read('config.ini', encoding='utf-8')
                 debuglevel = int(conf.get('server', 'debuglevel'))
-                server = ZMailWebServer(username, password, debuglevel=1)
+                server = ZMailWebServer(username, password, debuglevel=0)
                 if server.x_token is None:
                     log.warning(f'Login Web Mail Failed:{server.message} Retry Waiting 5s')
                     time.sleep(5)
@@ -70,13 +70,17 @@ if __name__ == '__main__':
                 time.sleep(5)
         try:
             mission_data = get_email_mission()
-            mission_data['receivers'].append('914081010@qq.com')
+            # mission_data['receivers'].append('914081010@qq.com')
             log.warning(f"Send Mail To {mission_data['receivers']}")
             result = server.send_mail(
                 to=mission_data['receivers'],
                 content=mission_data['message'],
                 subject=mission_data['subject']
             )
+            if 'Permission denied' in result:
+                log.warning(f"Account Error Retry Waiting 5s")
+                time.sleep(5)
+                continue
             log.warning(f"Send Mail: {result}")
             log.warning(f"Request Send History")
             code = server.get_send_list()
@@ -89,7 +93,7 @@ if __name__ == '__main__':
             log.warning(f"Send Mission Complete! Waiting {mission_data['delay']}")
             time.sleep(int(mission_data['delay']))
         except RequestException as e:
-            traceback.print_exc(e)
+            # traceback.print_exc(e)
             log.warning(f"Request Server Exception Retry Waiting 5s")
             time.sleep(5)
     # mission_data = get_email_mission()
