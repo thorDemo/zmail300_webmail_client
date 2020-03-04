@@ -1,0 +1,188 @@
+import requests
+import re
+import hashlib
+from bs4 import BeautifulSoup
+import time
+
+
+# 登录请求头
+login_headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,'
+              'application/signed-exchange;v=b3;q=0.9',
+    'Host': 'mailv.zmail300.cn',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Referer': 'https://mailv.zmail300.cn/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/79.0.3945.88 Safari/537.36',
+}
+# 邮件请求头
+email_headers = {
+    'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Connection': 'keep-alive',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Host': 'mailv.zmail300.cn',
+    'Origin': 'https://mailv.zmail300.cn',
+    'Referer': 'https://mailv.zmail300.cn/webmail/index.php',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36',
+}
+# 邮件数据格式
+email_data = {
+    'method': 'send',
+    'content': '',
+    'text': '',
+    'subject': '',
+    'to': '',
+    'cc': '',
+    'bcc': '',
+    'mail_name': '',
+    'json_name': '',
+    'send_type': 'is_draft',
+    'is_reply':  '',
+    'is_fwd': '',
+    'priority': 'false',
+    'composeSend': 'true',
+    'composeText': 'false',
+    'composeReceipt': 'false',
+    'composeSingle': 'false',
+    'composeTime': 'false',
+    'composeTrack': 'false',
+    'hasPlaceholder': 'false',
+    'tplName':  '',
+    'msg_id':  '',
+    'draftMailName': '',
+    'loadStr': '发送中...',
+    'encrypted_pwd': '',
+}
+
+
+def add_salt_md5_password(password_str):
+    md5_password = hashlib.md5(bytes(password_str, encoding='utf-8')).hexdigest()
+    md5_password_salt = hashlib.md5(bytes(md5_password + '88888', encoding='utf-8')).hexdigest()
+    return md5_password_salt
+
+
+class ZMailWebServer:
+    debuglevel = 0
+
+    def __init__(self, username, password, debuglevel):
+        self.debuglevel = debuglevel
+        self.username = username
+        self.password = password
+        self.session, self.x_token, self.message = self.login_web_mail()
+        self.remove_target = ''
+        self.subject = ''
+
+    def login_web_mail(self):
+        session = requests.session()
+        data = {
+                'account': self.username,
+                'password': add_salt_md5_password(self.password),
+                'vcode': '',
+                'remember_me': 1,
+                'login_lang': ''
+            }
+        response = session.post(
+            'https://mailv.zmail300.cn/webmail/web/php/user/login.php',
+            headers=login_headers,
+            data=data
+        )
+        context = response.text
+        soup = BeautifulSoup(context, 'html.parser')
+        message_box = soup.find(id='msg_container')
+        if message_box:
+            message = str(message_box.string).strip()
+            if self.debuglevel == 1:
+                print(None, message)
+            return session, None, message
+        else:
+            token = re.findall(r'"x-token":"(.*?)"', context, flags=0)[0]
+            if self.debuglevel == 1:
+                print(token, None)
+            return session, token, None
+
+    def send_mail(self, to, subject='', content=''):
+        self.subject = subject
+        bcc_string = ''
+        if isinstance(to, list):
+            receiver = to[0]
+            temp = 0
+            for line in to:
+                if temp > 0:
+                    bcc_string = bcc_string + ',' + line
+                temp += 1
+        else:
+            receiver = to
+        data = email_data
+        bcc_string = bcc_string.strip(',')
+        data['to'] = f'{receiver} <{receiver}>'
+        data['bcc'] = bcc_string
+        data['subject'] = subject
+        data['text'] = subject
+        data['content'] = content
+        header = email_headers
+        header['X-Token'] = self.x_token
+        response = self.session.post(
+            'https://mailv.zmail300.cn/webmail/web/php/user/mail/compose.php',
+            headers=header,
+            data=data
+        )
+        if self.debuglevel == 1:
+            print(data)
+            print(response.status_code, response.text)
+        return response.text
+
+    def get_send_list(self):
+        headers = login_headers
+        headers['Referer'] = 'https://mailv.zmail300.cn/webmail/index.php'
+        headers['X-Token'] = self.x_token
+        data = {
+            'method': 'list_mail',
+            'pop': 'false',
+            'fid': 2,
+            'page': 1,
+            'size': 100,
+            'account': '',
+        }
+        temp = 0
+        while True:
+            try:
+                list_response = self.session.post(
+                    'https://mailv.zmail300.cn/webmail/web/php/user/mail/list.php',
+                    headers=headers,
+                    data=data
+                )
+                if self.debuglevel == 1:
+                    print(f'get send list{list_response.json()}')
+                if self.subject == list_response.json()['result'][0]['subject']:
+                    self.remove_target = list_response.json()['result'][0]['mail_name']
+                    break
+                time.sleep(2)
+            except IndexError:
+                if temp >= 4:
+                    return 401
+                temp += 1
+                time.sleep(2)
+                continue
+        return 200
+
+    def remove_email_history(self):
+        headers = login_headers
+        headers['Referer'] = 'https://mailv.zmail300.cn/webmail/index.php'
+        headers['X-Token'] = self.x_token
+        data = {
+            'method': 'crush',
+            'mail_names': self.remove_target,
+            'subjects': self.subject
+        }
+        move_response = self.session.post(
+            'https://mailv.zmail300.cn/webmail/web/php/user/mail/list.php',
+            headers=headers,
+            data=data
+        )
+        if self.debuglevel == 1:
+            print(f'remove email history {move_response.json()}')
+        status_code = move_response.json()['code']
+        changed_rows = move_response.json()['changed_rows']
+        return status_code, changed_rows
