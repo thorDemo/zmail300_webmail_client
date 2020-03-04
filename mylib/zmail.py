@@ -91,16 +91,19 @@ class ZMailWebServer:
         context = response.text
         soup = BeautifulSoup(context, 'html.parser')
         message_box = soup.find(id='msg_container')
-        if message_box:
-            message = str(message_box.string).strip()
-            if self.debuglevel == 1:
-                print(None, message)
-            return session, None, message
-        else:
-            token = re.findall(r'"x-token":"(.*?)"', context, flags=0)[0]
-            if self.debuglevel == 1:
-                print(token, None)
-            return session, token, None
+        try:
+            if message_box:
+                message = str(message_box.string).strip()
+                if self.debuglevel == 1:
+                    print(None, message)
+                return session, None, message
+            else:
+                token = re.findall(r'"x-token":"(.*?)"', context, flags=0)[0]
+                if self.debuglevel == 1:
+                    print(token, None)
+                return session, token, None
+        except IndexError:
+            return session, None, '找不到token'
 
     def send_mail(self, to, subject='', content=''):
         self.subject = subject
