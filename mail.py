@@ -88,6 +88,7 @@ if __name__ == '__main__':
                 continue
             log.warning(f"Send Mail: {result}")
             # 不存入发件箱 不需要删除了
+            log.warning(f"Send Success Delay {mission_data['delay']}")
             time.sleep(int(mission_data['delay']))
         except RequestException as e:
             # traceback.print_exc(e)
