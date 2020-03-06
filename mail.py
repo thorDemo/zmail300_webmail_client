@@ -13,7 +13,8 @@ log = Log('send_email.log').get_log()
 
 def get_email_mission():
     c = ConfigParser()
-    c.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+    # c.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+    c.read(f'config.ini', encoding='utf-8')
     host = c.get('server', 'server_host')
     response = requests.get(f'http://{host}/email/', timeout=2)
     temp = json.dumps(response.json(), ensure_ascii=False)
@@ -22,7 +23,8 @@ def get_email_mission():
 
 def get_global_account():
     c = ConfigParser()
-    c.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+    # c.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+    c.read(f'config.ini', encoding='utf-8')
     host = c.get('server', 'server_host')
     response = requests.get(f'http://{host}/account/')
     return response.json()
@@ -30,7 +32,8 @@ def get_global_account():
 
 def post_auth_user(u, p):
     c = ConfigParser()
-    c.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+    # c.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+    c.read(f'config.ini', encoding='utf-8')
     host = c.get('server', 'server_host')
     requests.get(f'http://{host}/auth_account/?username={u}&password={p}')
     return
@@ -54,9 +57,11 @@ if __name__ == '__main__':
                 password = account_data['password']
                 log.warning(f'Request New Account:{username},{password}')
                 conf = ConfigParser()
-                conf.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+                # conf.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
+                conf.read(f'config.ini', encoding='utf-8')
                 debuglevel = int(conf.get('server', 'debuglevel'))
                 server = ZMailWebServer(username, password, debuglevel=debuglevel)
+                server.get_salt()
                 if server.x_token is None:
                     log.warning(f'Login Web Mail Failed:{server.message} Retry Waiting 5s')
                     time.sleep(5)
@@ -83,20 +88,9 @@ if __name__ == '__main__':
                 time.sleep(5)
                 continue
             log.warning(f"Send Mail: {result}")
-            log.warning(f"Request Send History")
-            code = server.get_send_list()
-            if code != 200:
-                log.warning(f"Get List Failed Next Retry Waiting 5s")
-                time.sleep(5)
-                continue
-            code, change = server.remove_email_history()
-            log.warning(f"Delete Send History: {code, change}")
-            log.warning(f"Send Mission Complete! Waiting {mission_data['delay']}")
+            # 不存入发件箱 不需要删除了
             time.sleep(int(mission_data['delay']))
         except RequestException as e:
             # traceback.print_exc(e)
             log.warning(f"Request Server Exception Retry Waiting 5s")
             time.sleep(5)
-    # mission_data = get_email_mission()
-    # print(mission_data['message'])
-    # print(get_email_mission())

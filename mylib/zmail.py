@@ -42,7 +42,7 @@ email_data = {
     'is_reply':  '',
     'is_fwd': '',
     'priority': 'false',
-    'composeSend': 'true',
+    'composeSend': 'false',
     'composeText': 'false',
     'composeReceipt': 'false',
     'composeSingle': 'false',
@@ -57,9 +57,9 @@ email_data = {
 }
 
 
-def add_salt_md5_password(password_str):
+def add_salt_md5_password(password_str, salt):
     md5_password = hashlib.md5(bytes(password_str, encoding='utf-8')).hexdigest()
-    md5_password_salt = hashlib.md5(bytes(md5_password + '88888', encoding='utf-8')).hexdigest()
+    md5_password_salt = hashlib.md5(bytes(md5_password + salt, encoding='utf-8')).hexdigest()
     return md5_password_salt
 
 
@@ -73,17 +73,17 @@ class ZMailWebServer:
         self.session, self.x_token, self.message = self.login_web_mail()
         self.remove_target = ''
         self.subject = ''
+        self.salt = '88888'
 
     def login_web_mail(self):
-        session = requests.session()
         data = {
                 'account': self.username,
-                'password': add_salt_md5_password(self.password),
+                'password': add_salt_md5_password(self.password, self.salt),
                 'vcode': '',
                 'remember_me': 1,
                 'login_lang': ''
             }
-        response = session.post(
+        response = self.session.post(
             'https://mailv.zmail300.cn/webmail/web/php/user/login.php',
             headers=login_headers,
             data=data
@@ -96,14 +96,23 @@ class ZMailWebServer:
                 message = str(message_box.string).strip()
                 if self.debuglevel == 1:
                     print(None, message)
-                return session, None, message
+                return None, message
             else:
                 token = re.findall(r'"x-token":"(.*?)"', context, flags=0)[0]
                 if self.debuglevel == 1:
                     print(token, None)
-                return session, token, None
+                return token, None
         except IndexError:
-            return session, None, '找不到token'
+            return None, '找不到token'
+
+    def get_salt(self):
+        self.session = requests.session()
+        response = self.session.get(
+            'https://mailv.zmail300.cn/webmail/login.php?er_msg=user_unexist_er',
+            headers=login_headers,
+        )
+        context = response.text
+        self.salt = re.findall(r'__code__ = "(.*?)"', context, flags=0)[0]
 
     def send_mail(self, to, subject='', content=''):
         self.subject = subject
@@ -189,3 +198,4 @@ class ZMailWebServer:
         status_code = move_response.json()['code']
         changed_rows = move_response.json()['changed_rows']
         return status_code, changed_rows
+
