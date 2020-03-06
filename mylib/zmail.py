@@ -70,10 +70,10 @@ class ZMailWebServer:
         self.debuglevel = debuglevel
         self.username = username
         self.password = password
+        self.salt = self.get_salt()
         self.session, self.x_token, self.message = self.login_web_mail()
         self.remove_target = ''
         self.subject = ''
-        self.salt = '88888'
 
     def login_web_mail(self):
         data = {
@@ -112,7 +112,8 @@ class ZMailWebServer:
             headers=login_headers,
         )
         context = response.text
-        self.salt = re.findall(r'__code__ = "(.*?)"', context, flags=0)[0]
+        salt = re.findall(r'__code__ = "(.*?)"', context, flags=0)[0]
+        return salt
 
     def send_mail(self, to, subject='', content=''):
         self.subject = subject

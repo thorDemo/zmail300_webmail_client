@@ -61,7 +61,6 @@ if __name__ == '__main__':
                 conf.read(f'config.ini', encoding='utf-8')
                 debuglevel = int(conf.get('server', 'debuglevel'))
                 server = ZMailWebServer(username, password, debuglevel=debuglevel)
-                server.get_salt()
                 if server.x_token is None:
                     log.warning(f'Login Web Mail Failed:{server.message} Retry Waiting 5s')
                     time.sleep(5)
