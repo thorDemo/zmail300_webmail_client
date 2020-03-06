@@ -25,7 +25,8 @@ email_headers = {
     'Host': 'mailv.zmail300.cn',
     'Origin': 'https://mailv.zmail300.cn',
     'Referer': 'https://mailv.zmail300.cn/webmail/index.php',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/79.0.3945.88 Safari/537.36',
 }
 # 邮件数据格式
 email_data = {
@@ -71,6 +72,7 @@ class ZMailWebServer:
         self.username = username
         self.password = password
         self.session = requests.session()
+        self.proxy = {"https": "https://58.218.92.128:9013"}
         self.salt = self.get_salt()
         self.x_token, self.message = self.login_web_mail()
         self.remove_target = ''
@@ -87,7 +89,8 @@ class ZMailWebServer:
         response = self.session.post(
             'https://mailv.zmail300.cn/webmail/web/php/user/login.php',
             headers=login_headers,
-            data=data
+            data=data,
+            proxies=self.proxy
         )
         context = response.text
         soup = BeautifulSoup(context, 'html.parser')
@@ -110,6 +113,7 @@ class ZMailWebServer:
         response = self.session.get(
             'https://mailv.zmail300.cn/webmail/login.php?er_msg=user_unexist_er',
             headers=login_headers,
+            proxies=self.proxy
         )
         context = response.text
         salt = re.findall(r'__code__ = "(.*?)"', context, flags=0)[0]
@@ -139,7 +143,8 @@ class ZMailWebServer:
         response = self.session.post(
             'https://mailv.zmail300.cn/webmail/web/php/user/mail/compose.php',
             headers=header,
-            data=data
+            data=data,
+            proxies=self.proxy
         )
         if self.debuglevel == 1:
             print(data)
