@@ -70,8 +70,9 @@ class ZMailWebServer:
         self.debuglevel = debuglevel
         self.username = username
         self.password = password
+        self.session = requests.session()
         self.salt = self.get_salt()
-        self.session, self.x_token, self.message = self.login_web_mail()
+        self.x_token, self.message = self.login_web_mail()
         self.remove_target = ''
         self.subject = ''
 
@@ -106,7 +107,6 @@ class ZMailWebServer:
             return None, '找不到token'
 
     def get_salt(self):
-        self.session = requests.session()
         response = self.session.get(
             'https://mailv.zmail300.cn/webmail/login.php?er_msg=user_unexist_er',
             headers=login_headers,
