@@ -8,6 +8,15 @@ import requests
 import time
 import json
 
+login_headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,'
+              'application/signed-exchange;v=b3;q=0.9',
+    'Host': 'mailv.zmail300.cn',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Referer': 'https://mailv.zmail300.cn/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/79.0.3945.88 Safari/537.36',
+}
 
 log = Log('send_email.log').get_log()
 
@@ -46,9 +55,31 @@ def get_proxies():
     return data
 
 
+def test_proxy(proxies):
+    t = 0
+    while t < 5:
+        try:
+            requests.get(
+                'https://mailv.zmail300.cn/webmail/login.php?msg=login',
+                headers=login_headers,
+                proxies={'https': f'https://{proxies}'},
+                timeout=2
+            )
+            break
+        except RequestException as e:
+            t += 1
+    if t < 4:
+        return True
+    else:
+        return False
+
+
 def thread_mission(proxies):
     log.warning(f'CONNECT EMAIL SERVER WITH {proxies}')
     temp = 0
+    if test_proxy(proxies) is False:
+        log.warning(f'CONNECT PROXY ERROR {proxies}')
+        return
     while temp < 5:
         while True:
             try:
@@ -67,7 +98,8 @@ def thread_mission(proxies):
                     break
             except RequestException:
                 log.warning(f'{temp}-{proxies}-Request Server Exception Retry Waiting 5s')
-                time.sleep(5)
+                temp += 1
+                time.sleep(1)
         try:
             mission_data = get_email_mission()
             # mission_data['receivers'].append('914081010@qq.com')
@@ -87,8 +119,9 @@ def thread_mission(proxies):
             temp += 1
         except RequestException as e:
             # traceback.print_exc(e)
+            temp += 1
             log.warning(f"{temp}-{proxies}-Request Server Exception Retry Waiting 5s")
-            time.sleep(5)
+            time.sleep(1)
 
 
 pool = ThreadPool(40)
