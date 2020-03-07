@@ -42,11 +42,12 @@ def get_proxies():
           '&cs=0&lb=1&sb=0&pb=4&mr=1&regions=&gm=4'
     response = requests.get(url=url)
     data = str(response.text).strip().split('\r\n')
+    print(len(data))
     return data
 
 
 def thread_mission(proxies):
-    log.warning('CONNECT EMAIL SERVER')
+    log.warning('CONNECT EMAIL SERVER WITH {proxies}')
     temp = 0
     while temp < 5:
         while True:
@@ -94,6 +95,7 @@ pool = ThreadPool(40)
 while True:
     log.warning(f"--------------------------新的风暴已经开始---------------------------------")
     args = get_proxies()
+    print(args)
     request = makeRequests(thread_mission, args)
     [pool.putRequest(req) for req in request]
     pool.wait()
