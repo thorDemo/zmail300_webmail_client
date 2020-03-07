@@ -71,7 +71,7 @@ class ZMailWebServer:
         self.username = username
         self.password = password
         self.session = requests.session()
-        self.proxies = proxies
+        self.proxies = {'https': f'https://{proxies}'}
         self.salt = self.get_salt()
         self.x_token, self.message = self.login_web_mail()
         self.remove_target = ''
