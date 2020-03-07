@@ -92,10 +92,10 @@ def thread_mission(proxies):
 
 
 pool = ThreadPool(40)
-while True:
-    log.warning(f"--------------------------新的风暴已经开始---------------------------------")
-    args = get_proxies()
-    print(args)
-    request = makeRequests(thread_mission, args)
-    [pool.putRequest(req) for req in request]
-    pool.wait()
+# while True:
+log.warning(f"--------------------------新的风暴已经开始---------------------------------")
+args = get_proxies()
+print(args)
+request = makeRequests(thread_mission, args)
+[pool.putRequest(req) for req in request]
+pool.wait()
