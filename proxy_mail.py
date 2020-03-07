@@ -97,6 +97,9 @@ def thread_mission(proxies):
                     log.warning(f'{temp}-{proxies}-Send Back Auth Account:{username, password}')
                     break
             except RequestException:
+                if test_proxy(proxies) is False:
+                    log.warning(f'CONNECT PROXY ERROR {proxies}')
+                    return
                 log.warning(f'{temp}-{proxies}-Request Server Exception Retry Waiting 5s')
                 temp += 1
                 time.sleep(1)
@@ -119,6 +122,9 @@ def thread_mission(proxies):
             temp += 1
         except RequestException as e:
             # traceback.print_exc(e)
+            if test_proxy(proxies) is False:
+                log.warning(f'CONNECT PROXY ERROR {proxies}')
+                return
             temp += 1
             log.warning(f"{temp}-{proxies}-Request Server Exception Retry Waiting 5s")
             time.sleep(1)
