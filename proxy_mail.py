@@ -41,7 +41,7 @@ def get_proxies():
     url = 'http://http.tiqu.alicdns.com/getip3?num=40&type=1&pro=0&city=0&yys=0&port=1&time=1&ts=0&ys=0' \
           '&cs=0&lb=1&sb=0&pb=4&mr=1&regions=&gm=4'
     response = requests.get(url=url)
-    data = str(response.text).split('\n')
+    data = str(response.text).split('\r\n')
     return data
 
 
