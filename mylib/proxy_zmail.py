@@ -2,7 +2,6 @@ import requests
 import re
 import hashlib
 from bs4 import BeautifulSoup
-import time
 
 
 # 登录请求头
@@ -67,11 +66,12 @@ def add_salt_md5_password(password_str, salt):
 class ZMailWebServer:
     debuglevel = 0
 
-    def __init__(self, username, password, debuglevel):
+    def __init__(self, username, password, proxies, debuglevel):
         self.debuglevel = debuglevel
         self.username = username
         self.password = password
         self.session = requests.session()
+        self.proxies = proxies
         self.salt = self.get_salt()
         self.x_token, self.message = self.login_web_mail()
         self.remove_target = ''
@@ -89,6 +89,7 @@ class ZMailWebServer:
             'https://mailv.zmail300.cn/webmail/web/php/user/login.php',
             headers=login_headers,
             data=data,
+            proxies=self.proxies
         )
         context = response.text
         soup = BeautifulSoup(context, 'html.parser')
@@ -111,6 +112,7 @@ class ZMailWebServer:
         response = self.session.get(
             'https://mailv.zmail300.cn/webmail/login.php?msg=login',
             headers=login_headers,
+            proxies=self.proxies
         )
         context = response.text
         salt = re.findall(r'__code__ = "(.*?)"', context, flags=0)[0]
@@ -141,62 +143,9 @@ class ZMailWebServer:
             'https://mailv.zmail300.cn/webmail/web/php/user/mail/compose.php',
             headers=header,
             data=data,
+            proxies=self.proxies
         )
         if self.debuglevel == 1:
             print(data)
             print(response.status_code, response.text)
         return response.text
-
-    def get_send_list(self):
-        headers = login_headers
-        headers['Referer'] = 'https://mailv.zmail300.cn/webmail/index.php'
-        headers['X-Token'] = self.x_token
-        data = {
-            'method': 'list_mail',
-            'pop': 'false',
-            'fid': 2,
-            'page': 1,
-            'size': 100,
-            'account': '',
-        }
-        temp = 0
-        while True:
-            try:
-                list_response = self.session.post(
-                    'https://mailv.zmail300.cn/webmail/web/php/user/mail/list.php',
-                    headers=headers,
-                    data=data
-                )
-                if self.debuglevel == 1:
-                    print(f'get send list{list_response.json()}')
-                if self.subject == list_response.json()['result'][0]['subject']:
-                    self.remove_target = list_response.json()['result'][0]['mail_name']
-                    break
-                time.sleep(2)
-            except IndexError:
-                if temp >= 4:
-                    return 401
-                temp += 1
-                time.sleep(2)
-                continue
-        return 200
-
-    def remove_email_history(self):
-        headers = login_headers
-        headers['Referer'] = 'https://mailv.zmail300.cn/webmail/index.php'
-        headers['X-Token'] = self.x_token
-        data = {
-            'method': 'crush',
-            'mail_names': self.remove_target,
-            'subjects': self.subject
-        }
-        move_response = self.session.post(
-            'https://mailv.zmail300.cn/webmail/web/php/user/mail/list.php',
-            headers=headers,
-            data=data
-        )
-        if self.debuglevel == 1:
-            print(f'remove email history {move_response.json()}')
-        status_code = move_response.json()['code']
-        changed_rows = move_response.json()['changed_rows']
-        return status_code, changed_rows
