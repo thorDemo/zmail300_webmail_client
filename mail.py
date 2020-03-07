@@ -1,5 +1,5 @@
 from requests.exceptions import RequestException
-from mylib.zmail import ZMailWebServer
+from mylib.proxy_zmail import ZMailWebServer
 from mylib.code_logging import Logger as Log
 from configparser import ConfigParser
 import random
@@ -40,27 +40,19 @@ def post_auth_user(u, p):
 
 
 if __name__ == '__main__':
-    rand_time = random.randint(10, 20)
     log.warning(f'working dir: {os.getcwd()}')
-    log.warning('RANDOM WAIT {}'.format(rand_time))
-    # Test todo
-    # time.sleep(rand_time)
     log.warning('CONNECT EMAIL SERVER')
     while True:
         while True:
             try:
-                # Test todo
-                # username = ''
-                # password = ''
                 account_data = get_global_account()
                 username = account_data['username']
                 password = account_data['password']
                 log.warning(f'Request New Account:{username},{password}')
                 conf = ConfigParser()
-                # conf.read(f'/root/zmail300_webmail_client/config.ini', encoding='utf-8')
                 conf.read(f'config.ini', encoding='utf-8')
                 debuglevel = int(conf.get('server', 'debuglevel'))
-                server = ZMailWebServer(username, password, debuglevel=debuglevel)
+                server = ZMailWebServer(username, password, debuglevel=debuglevel, proxies='58.218.92.170:7943')
                 if server.x_token is None:
                     log.warning(f'Login Web Mail Failed:{server.message} Retry Waiting 5s')
                     time.sleep(5)
@@ -79,10 +71,8 @@ if __name__ == '__main__':
             log.warning(f"Send Mail To {mission_data['receivers']}")
             result = server.send_mail(
                 to=mission_data['receivers'],
-                # content=mission_data['message'],
-                content='想你的夜',
-                # subject=mission_data['subject']
-                subject='你人在哪里！'
+                content=mission_data['message'],
+                subject=mission_data['subject']
             )
             if 'Permission denied' in result:
                 log.warning(f"Account Error Retry Waiting 5s")
