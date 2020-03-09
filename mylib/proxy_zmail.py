@@ -165,7 +165,7 @@ class ZMailWebServer:
             proxies=self.proxies
         )
         if self.debuglevel == 1:
-            print(data)
+            print(response.request.data)
             print(response.status_code, response.text)
         return response.text
 
