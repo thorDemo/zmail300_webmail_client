@@ -1,8 +1,8 @@
-import requests
-import re
-import hashlib
 from bs4 import BeautifulSoup
-
+import requests
+import hashlib
+import re
+import os
 
 # 登录请求头
 login_headers = {
@@ -54,6 +54,21 @@ email_data = {
     'draftMailName': '',
     'loadStr': '发送中...',
     'encrypted_pwd': '',
+}
+# 提交图片请求头
+post_headers = {
+    'Accept': '*/*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Connection': 'keep-alive',
+    'Host': 'mailv.zmail300.cn',
+    'Origin': 'https://mailv.zmail300.cn',
+    'Referer': 'https://mailv.zmail300.cn/webmail/index.php',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-origin',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/8'
+                  '0.0.3987.132 Safari/537.36'
 }
 
 
@@ -149,3 +164,20 @@ class ZMailWebServer:
             print(data)
             print(response.status_code, response.text)
         return response.text
+
+    def post_img(self, image):
+        files = {
+            'upload': (
+                image,
+                open(f'temp/{image}', 'rb').read(),
+                'image/jpeg'
+            ),
+        }
+        response = self.session.post(
+            'https://mailv.zmail300.cn/webmail/web/php/user/mail/upload.php?type=img',
+            files=files,
+            headers=login_headers
+        )
+        os.remove(f'temp/{image}')
+        result = response.json()
+        return result['url']

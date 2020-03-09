@@ -2,6 +2,7 @@ from requests.exceptions import RequestException
 from mylib.proxy_zmail import ZMailWebServer
 from mylib.code_logging import Logger as Log
 from configparser import ConfigParser
+from mylib.create_ad_img import create_yh_ad_img
 import random
 import requests
 import time

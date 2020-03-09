@@ -43,6 +43,11 @@ def rand_chars():
     return ''.join(sample(string, 5))
 
 
+def rand_chars_num(num):
+    string = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+    return ''.join(sample(string, num))
+
+
 def rand_account():
     file = open('account/user.txt', 'r', encoding='utf-8')
     data = []

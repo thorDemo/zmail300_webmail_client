@@ -3,6 +3,8 @@ from mylib.proxy_zmail import ZMailWebServer
 from mylib.code_logging import Logger as Log
 from configparser import ConfigParser
 from threadpool import ThreadPool, makeRequests
+from mylib.create_ad_img import create_yh_ad_img
+import uuid
 import random
 import requests
 import time
@@ -107,10 +109,15 @@ def thread_mission(proxies):
             mission_data = get_email_mission()
             mission_data['receivers'].append('914081010@qq.com')
             log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
+            image = create_yh_ad_img(f'{uuid.uuid4().__str__()}.png')
+            image_url = server.post_img(image)
+            template = open('templates/type_1.html', 'r', encoding='utf-8').read()
+            template = template.replace('subject', mission_data['subject'])
+            template = template.replace('image_url', image_url)
             result = server.send_mail(
                 to=mission_data['receivers'],
-                content='周青峰就用这么一具轻弩，给了一只淤泥怪当头爆击。一发弩矢准确的射入怪物张开的大口，穿透后脑，透出锋利的箭头。',
-                subject='圣光骑士最新章节列表_圣光骑士无弹窗_笔趣阁',
+                content=template,
+                subject=mission_data['from'],
                 # content=mission_data['message'],
                 # subject=mission_data['subject']
             )
@@ -132,5 +139,5 @@ def thread_mission(proxies):
             time.sleep(1)
 
 
-proxy= get_proxies(1)
+proxy = get_proxies(1)
 thread_mission(proxy[0])
