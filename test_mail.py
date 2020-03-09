@@ -47,8 +47,8 @@ def post_auth_user(u, p):
 
 
 def get_proxies(num):
-    url = f'http://http.tiqu.alicdns.com/getip3?num={num}&type=1&pro=0&city=0&yys=0&port=1&time=1&ts=0&ys=0' \
-          '&cs=0&lb=1&sb=0&pb=4&mr=1&regions=&gm=4'
+    url = f'http://http.tiqu.alicdns.com/getip3?num=1&type=1&pro=&city=0&yys=0&port=1&time=1&ts=0&ys=0&' \
+          f'cs=0&lb=1&sb=0&pb=4&mr=1&regions=&gm=4'
     response = requests.get(url=url)
     data = str(response.text).strip().split('\r\n')
     print(len(data))
@@ -110,9 +110,9 @@ def thread_mission(proxies):
             result = server.send_mail(
                 to=mission_data['receivers'],
                 content='周青峰就用这么一具轻弩，给了一只淤泥怪当头爆击。一发弩矢准确的射入怪物张开的大口，穿透后脑，透出锋利的箭头。',
-                # subject='圣光骑士最新章节列表_圣光骑士无弹窗_笔趣阁',
+                subject='圣光骑士最新章节列表_圣光骑士无弹窗_笔趣阁',
                 # content=mission_data['message'],
-                subject=mission_data['subject']
+                # subject=mission_data['subject']
             )
             if 'Permission denied' in result:
                 log.warning(f"{temp}-{proxies}-Account Error Retry Waiting 5s")
