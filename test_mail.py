@@ -88,7 +88,7 @@ def thread_mission(proxies):
                 account_data = get_global_account()
                 username = account_data['username']
                 password = account_data['password']
-                server = ZMailWebServer(username, password, debuglevel=0, proxies=proxies)
+                server = ZMailWebServer(username, password, debuglevel=1, proxies=proxies)
                 if server.x_token is None:
                     log.warning(f'{temp}-{proxies}-Login Web Mail Failed:{server.message} Retry Waiting 5s')
                     time.sleep(5)
