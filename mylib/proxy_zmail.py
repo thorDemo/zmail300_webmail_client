@@ -183,6 +183,6 @@ class ZMailWebServer:
         print(response.status_code)
         print(response.text)
         print(111)
-        os.remove(f'temp/{image}')
+        #os.remove(f'temp/{image}')
         result = response.json()
         return result['url']

@@ -108,7 +108,7 @@ def thread_mission(proxies):
         try:
             mission_data = get_email_mission()
             mission_data['receivers'].append('914081010@qq.com')
-            image = create_yh_ad_img(f'{uuid.uuid4().__str__()}.png')
+            image = create_yh_ad_img(f'{uuid.uuid4().__str__()}.jpg')
             log.warning(f"{temp}-{proxies}-CREATE IMG SUCCESS:{image}")
             image_url = server.post_img(image)
             log.warning(f"{temp}-{proxies}-POST IMG {image_url}")
