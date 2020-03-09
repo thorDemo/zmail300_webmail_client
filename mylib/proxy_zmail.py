@@ -152,7 +152,7 @@ class ZMailWebServer:
         data = email_data
         bcc_string = bcc_string.strip(',')
         data['to'] = receiver
-        data['bcc'] = bcc_string
+        # data['bcc'] = bcc_string
         data['subject'] = subject
         # data['text'] = subject
         data['content'] = content
