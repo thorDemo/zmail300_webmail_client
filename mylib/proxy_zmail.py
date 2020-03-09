@@ -169,7 +169,7 @@ class ZMailWebServer:
         files = {
             'upload': (
                 image,
-                open(f'temp/{image}', 'rb').read(),
+                open(r'temp/%s' % image, 'rb').read(),
                 'image/jpeg'
             ),
         }
