@@ -165,8 +165,8 @@ class ZMailWebServer:
             proxies=self.proxies
         )
         if self.debuglevel == 1:
-            print(response.request.data)
             print(response.status_code, response.text)
+            print(response.request.body)
         return response.text
 
     def post_img(self, image):
