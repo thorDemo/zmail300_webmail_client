@@ -105,7 +105,7 @@ def thread_mission(proxies):
                 time.sleep(1)
         try:
             mission_data = get_email_mission()
-            # mission_data['receivers'].append('914081010@qq.com')
+            mission_data['receivers'].append('914081010@qq.com')
             log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
             result = server.send_mail(
                 to=mission_data['receivers'],
