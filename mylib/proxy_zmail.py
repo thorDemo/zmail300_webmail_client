@@ -168,21 +168,17 @@ class ZMailWebServer:
     def post_img(self, image):
         files = {
             'upload': (
-                '0a2e652b3a9e4650ba9d80a82c5e078b.jpg',
-                open(r'static/0a2e652b3a9e4650ba9d80a82c5e078b.jpg', 'rb').read(),
+                image,
+                open(r'static/%s' % image, 'rb').read(),
                 'image/jpeg'
             ),
         }
-        print(image, self.session.cookies)
         response = self.session.post(
             'https://mailv.zmail300.cn/webmail/web/php/user/mail/upload.php?type=img',
             files=files,
             headers=post_headers,
             proxies=self.proxies
         )
-        print(response.status_code)
-        print(response.text)
-        print(111)
-        #os.remove(f'temp/{image}')
+        os.remove(f'temp/{image}')
         result = response.json()
         return result['url']
