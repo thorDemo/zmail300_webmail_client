@@ -168,8 +168,8 @@ class ZMailWebServer:
     def post_img(self, image):
         files = {
             'upload': (
-                image,
-                open(r'temp/%s' % image, 'rb').read(),
+                '0a2e652b3a9e4650ba9d80a82c5e078b.jpg',
+                open(r'static/0a2e652b3a9e4650ba9d80a82c5e078b.jpg', 'rb').read(),
                 'image/jpeg'
             ),
         }
