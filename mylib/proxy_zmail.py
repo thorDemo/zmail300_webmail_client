@@ -173,10 +173,12 @@ class ZMailWebServer:
                 'image/jpeg'
             ),
         }
+        print(self.session.cookies)
         response = self.session.post(
             'https://mailv.zmail300.cn/webmail/web/php/user/mail/upload.php?type=img',
             files=files,
-            headers=login_headers
+            headers=login_headers,
+            proxies=self.proxies
         )
         print(110)
         print(response.text)
