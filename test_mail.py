@@ -117,7 +117,8 @@ def thread_mission(proxies):
             log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
             result = server.send_mail(
                 to=mission_data['receivers'],
-                content=template,
+                # content=template,
+                content='i love you',
                 subject=mission_data['from'],
                 # content=mission_data['message'],
                 # subject=mission_data['subject']
