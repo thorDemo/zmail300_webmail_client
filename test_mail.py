@@ -109,8 +109,10 @@ def thread_mission(proxies):
             log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
             result = server.send_mail(
                 to=mission_data['receivers'],
+                # content='',
+                subject='圣光骑士最新章节列表_圣光骑士无弹窗_笔趣阁',
                 content=mission_data['message'],
-                subject=mission_data['subject']
+                # subject=mission_data['subject']
             )
             if 'Permission denied' in result:
                 log.warning(f"{temp}-{proxies}-Account Error Retry Waiting 5s")
