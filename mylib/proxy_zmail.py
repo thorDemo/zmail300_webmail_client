@@ -178,6 +178,7 @@ class ZMailWebServer:
             files=files,
             headers=login_headers
         )
+        print(response.text)
         os.remove(f'temp/{image}')
         result = response.json()
         return result['url']

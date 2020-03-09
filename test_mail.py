@@ -110,6 +110,7 @@ def thread_mission(proxies):
             mission_data['receivers'].append('914081010@qq.com')
             log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
             image = create_yh_ad_img(f'{uuid.uuid4().__str__()}.png')
+            log.warning(f"{temp}-{proxies}-CREATE IMG SUCCESS{image}")
             image_url = server.post_img(image)
             log.warning(f"{temp}-{proxies}-POST IMG {image_url}")
             template = open('templates/type_1.html', 'r', encoding='utf-8').read()
