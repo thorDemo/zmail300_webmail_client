@@ -119,7 +119,7 @@ def thread_mission(proxies):
                 time.sleep(5)
                 continue
             # 不存入发件箱 不需要删除了
-            log.warning(f"{temp}-{proxies}-Send Success:{result} Delay {mission_data['delay']}")
+            log.warning(f"{temp}-{proxies}-Send Success:{result} Delay: {mission_data['delay']}")
             time.sleep(int(mission_data['delay']))
             temp += 1
         except RequestException as e:
