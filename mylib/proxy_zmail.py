@@ -177,7 +177,7 @@ class ZMailWebServer:
         response = self.session.post(
             'https://mailv.zmail300.cn/webmail/web/php/user/mail/upload.php?type=img',
             files=files,
-            headers=login_headers,
+            headers=post_headers,
             proxies=self.proxies
         )
         print(response.status_code)
