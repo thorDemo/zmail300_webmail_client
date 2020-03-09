@@ -147,7 +147,7 @@ class ZMailWebServer:
             receiver = to
         data = email_data
         bcc_string = bcc_string.strip(',')
-        data['to'] = f'{receiver} <{receiver}>'
+        data['to'] = receiver
         data['bcc'] = bcc_string
         data['subject'] = subject
         # data['text'] = subject
