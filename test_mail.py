@@ -111,6 +111,7 @@ def thread_mission(proxies):
             log.warning(f"{temp}-{proxies}-Send Mail To {mission_data['receivers']}")
             image = create_yh_ad_img(f'{uuid.uuid4().__str__()}.png')
             image_url = server.post_img(image)
+            log.warning(f"{temp}-{proxies}-POST IMG {image_url}")
             template = open('templates/type_1.html', 'r', encoding='utf-8').read()
             template = template.replace('subject', mission_data['subject'])
             template = template.replace('image_url', image_url)
