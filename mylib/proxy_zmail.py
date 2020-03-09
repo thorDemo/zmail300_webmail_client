@@ -150,7 +150,7 @@ class ZMailWebServer:
         data['to'] = f'{receiver} <{receiver}>'
         data['bcc'] = bcc_string
         data['subject'] = subject
-        data['text'] = subject
+        # data['text'] = subject
         data['content'] = content
         header = email_headers
         header['X-Token'] = self.x_token
