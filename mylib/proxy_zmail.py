@@ -24,8 +24,8 @@ email_headers = {
     'Host': 'mailv.zmail300.cn',
     'Origin': 'https://mailv.zmail300.cn',
     'Referer': 'https://mailv.zmail300.cn/webmail/index.php',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                  'Chrome/79.0.3945.88 Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                  ' Chrome/80.0.3987.132 Safari/537.36',
     'Sec-Fetch-Dest': 'empty',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-origin',
@@ -42,7 +42,7 @@ email_data = {
     'bcc': '',
     'mail_name': '',
     'json_name': '',
-    'send_type': 'is_draft',
+    'send_type': '',
     'is_reply':  '',
     'is_fwd': '',
     'priority': 'false',
