@@ -18,7 +18,7 @@ login_headers = {
 email_headers = {
     'Accept': 'application/json, text/javascript, */*; q=0.01',
     'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
     'Connection': 'keep-alive',
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
     'Host': 'mailv.zmail300.cn',
@@ -167,6 +167,7 @@ class ZMailWebServer:
         if self.debuglevel == 1:
             print(response.status_code, response.text)
             print(response.request.body)
+            print(response.request.headers)
         return response.text
 
     def post_img(self, image):
